@@ -14,7 +14,81 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+          timezone: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id: string
+          timezone?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          timezone?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      reminders: {
+        Row: {
+          created_at: string
+          description: string | null
+          due_date: string
+          due_time: string
+          id: string
+          original_text: string | null
+          recurrence: Database["public"]["Enums"]["recurrence_type"]
+          recurrence_monthday: number | null
+          recurrence_weekday: number | null
+          status: Database["public"]["Enums"]["reminder_status"]
+          timezone: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          due_date: string
+          due_time: string
+          id?: string
+          original_text?: string | null
+          recurrence?: Database["public"]["Enums"]["recurrence_type"]
+          recurrence_monthday?: number | null
+          recurrence_weekday?: number | null
+          status?: Database["public"]["Enums"]["reminder_status"]
+          timezone?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          due_date?: string
+          due_time?: string
+          id?: string
+          original_text?: string | null
+          recurrence?: Database["public"]["Enums"]["recurrence_type"]
+          recurrence_monthday?: number | null
+          recurrence_weekday?: number | null
+          status?: Database["public"]["Enums"]["reminder_status"]
+          timezone?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +97,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      recurrence_type: "none" | "daily" | "weekly" | "monthly"
+      reminder_status: "pending" | "done" | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +225,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      recurrence_type: ["none", "daily", "weekly", "monthly"],
+      reminder_status: ["pending", "done", "cancelled"],
+    },
   },
 } as const
