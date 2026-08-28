@@ -93,7 +93,14 @@ function Painel() {
         Fale ou escreva como preferir. Eu interpreto e confirmo com você antes de salvar.
       </p>
 
-      <Composer saving={create.isPending} onConfirm={async (draft) => create.mutateAsync(draft)} />
+      <Composer
+        saving={create.isPending}
+        onConfirm={async (draft) => {
+          await create.mutateAsync(draft);
+        }}
+      />
+
+
 
       <section className="mt-12">
         <div className="flex items-center justify-between">
