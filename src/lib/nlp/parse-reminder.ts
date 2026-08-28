@@ -245,9 +245,19 @@ export function parseReminder(input: string, now: Date = new Date()): ParsedRemi
     },
   ];
 
+  // Expressões relativas ("daqui a 2 horas") são detectadas antes do horário,
+  // para que "2 horas" não seja lido como "02:00".
+  const relativeIn = norm.match(
+    /\bdaqui\s+a\s+(\d+|um|uma|dois|duas|tres|quatro|cinco|seis|sete|oito|nove|dez|quinze|vinte|trinta)\s+(minutos?|horas?|dias?|semanas?|mes(?:es)?)\b/,
+  );
+  const relativeStart = relativeIn?.index ?? -1;
+  const relativeEnd = relativeIn ? relativeStart + relativeIn[0].length : -1;
+
   for (const pattern of timePatterns) {
     const match = norm.match(pattern.re);
     if (!match) continue;
+    const index = match.index ?? -1;
+    if (relativeIn && index >= relativeStart && index < relativeEnd) continue;
     const [h, m] = pattern.read(match);
     if (h > 23 || m > 59) continue;
     hour = h;
@@ -257,9 +267,7 @@ export function parseReminder(input: string, now: Date = new Date()): ParsedRemi
   }
 
   // ---------- Data ----------
-  const relativeIn = norm.match(
-    /\bdaqui\s+a\s+(\d+|um|uma|dois|duas|tres|quatro|cinco|seis|sete|oito|nove|dez|quinze|vinte|trinta)\s+(minutos?|horas?|dias?|semanas?|mes(?:es)?)\b/,
-  );
+
   const dayMonthWord = norm.match(new RegExp(`\\b(?:dia\\s+)?(\\d{1,2})\\s+de\\s+(${MONTH_PATTERN})(?:\\s+de\\s+(\\d{4}))?\\b`));
   const numericDate = norm.match(/\b(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?\b/);
   const nextWeekdayMatch = norm.match(
