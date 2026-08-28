@@ -245,9 +245,19 @@ export function parseReminder(input: string, now: Date = new Date()): ParsedRemi
     },
   ];
 
+  // Expressões relativas ("daqui a 2 horas") são detectadas antes do horário,
+  // para que "2 horas" não seja lido como "02:00".
+  const relativeIn = norm.match(
+    /\bdaqui\s+a\s+(\d+|um|uma|dois|duas|tres|quatro|cinco|seis|sete|oito|nove|dez|quinze|vinte|trinta)\s+(minutos?|horas?|dias?|semanas?|mes(?:es)?)\b/,
+  );
+  const relativeStart = relativeIn?.index ?? -1;
+  const relativeEnd = relativeIn ? relativeStart + relativeIn[0].length : -1;
+
   for (const pattern of timePatterns) {
     const match = norm.match(pattern.re);
     if (!match) continue;
+    const index = match.index ?? -1;
+    if (relativeIn && index >= relativeStart && index < relativeEnd) continue;
     const [h, m] = pattern.read(match);
     if (h > 23 || m > 59) continue;
     hour = h;
@@ -257,9 +267,7 @@ export function parseReminder(input: string, now: Date = new Date()): ParsedRemi
   }
 
   // ---------- Data ----------
-  const relativeIn = norm.match(
-    /\bdaqui\s+a\s+(\d+|um|uma|dois|duas|tres|quatro|cinco|seis|sete|oito|nove|dez|quinze|vinte|trinta)\s+(minutos?|horas?|dias?|semanas?|mes(?:es)?)\b/,
-  );
+
   const dayMonthWord = norm.match(new RegExp(`\\b(?:dia\\s+)?(\\d{1,2})\\s+de\\s+(${MONTH_PATTERN})(?:\\s+de\\s+(\\d{4}))?\\b`));
   const numericDate = norm.match(/\b(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?\b/);
   const nextWeekdayMatch = norm.match(
@@ -415,6 +423,9 @@ const LEADING_NOISE = [
   /^\s*(?:voztrace)\b[,\s]*/i,
   /^\s*(?:nao\s+me\s+deixe\s+esquecer|não\s+me\s+deixe\s+esquecer)\b[,\s]*/i,
   /^\s*(?:me\s+)?lembr(?:a|e|ar|e-me|a-me)\b[,\s]*/i,
+  // Preposição órfã deixada pela remoção de um trecho de data/hora
+  // ("me lembra amanhã às 10h de ligar" -> "às de ligar" -> "ligar").
+  /^\s*(?:à|a|às|as|ao|aos|em|no|na)\s+(?=(?:de|do|da|pra|para|pro|que)\s)/i,
   /^\s*(?:de|do|da|que|para|pra|pro)\b\s+/i,
   /^\s*(?:eu\s+)?(?:preciso|tenho\s+que|quero)\b\s+(?:de\s+)?/i,
 ];
@@ -433,6 +444,9 @@ function cleanupTitle(raw: string): string {
     }
   }
   title = title.replace(/^[,;.\-–—\s]+/, "").replace(/[,;.\s]+$/, "");
+  // Preposição solta no fim ("ligar para o Carlos às" -> "ligar para o Carlos").
+  title = title.replace(/\s+(?:à|às|as|ao|aos|de|do|da|em|no|na|para|pra)$/i, "");
+
   title = title.replace(/\s+/g, " ").trim();
   if (!title) return "";
   return title.charAt(0).toUpperCase() + title.slice(1);
