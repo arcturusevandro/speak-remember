@@ -415,6 +415,9 @@ const LEADING_NOISE = [
   /^\s*(?:voztrace)\b[,\s]*/i,
   /^\s*(?:nao\s+me\s+deixe\s+esquecer|não\s+me\s+deixe\s+esquecer)\b[,\s]*/i,
   /^\s*(?:me\s+)?lembr(?:a|e|ar|e-me|a-me)\b[,\s]*/i,
+  // Preposição órfã deixada pela remoção de um trecho de data/hora
+  // ("me lembra amanhã às 10h de ligar" -> "às de ligar" -> "ligar").
+  /^\s*(?:à|a|às|as|ao|aos|em|no|na)\s+(?=(?:de|do|da|pra|para|pro|que)\s)/i,
   /^\s*(?:de|do|da|que|para|pra|pro)\b\s+/i,
   /^\s*(?:eu\s+)?(?:preciso|tenho\s+que|quero)\b\s+(?:de\s+)?/i,
 ];
@@ -433,6 +436,9 @@ function cleanupTitle(raw: string): string {
     }
   }
   title = title.replace(/^[,;.\-–—\s]+/, "").replace(/[,;.\s]+$/, "");
+  // Preposição solta no fim ("ligar para o Carlos às" -> "ligar para o Carlos").
+  title = title.replace(/\s+(?:à|às|as|ao|aos|de|do|da|em|no|na|para|pra)$/i, "");
+
   title = title.replace(/\s+/g, " ").trim();
   if (!title) return "";
   return title.charAt(0).toUpperCase() + title.slice(1);
