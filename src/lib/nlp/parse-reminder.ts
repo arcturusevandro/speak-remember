@@ -426,6 +426,8 @@ const LEADING_NOISE = [
   // Preposição órfã deixada pela remoção de um trecho de data/hora
   // ("me lembra amanhã às 10h de ligar" -> "às de ligar" -> "ligar").
   /^\s*(?:à|a|às|as|ao|aos|em|no|na)\s+(?=(?:de|do|da|pra|para|pro|que)\s)/i,
+  /^\s*(?:à|às|ao|aos)\s+/i,
+
   /^\s*(?:de|do|da|que|para|pra|pro)\b\s+/i,
   /^\s*(?:eu\s+)?(?:preciso|tenho\s+que|quero)\b\s+(?:de\s+)?/i,
 ];
