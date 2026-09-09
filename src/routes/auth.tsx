@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { VtLogo } from "@/components/vt/logo";
-import { lovable } from "@/integrations/lovable/index";
 import { supabase } from "@/integrations/supabase/client";
 
 type Mode = "entrar" | "criar";
@@ -88,15 +87,20 @@ function AuthPage() {
   }
 
   async function google() {
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
-    if (result.error) {
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/painel`,
+        },
+      });
+      if (error) throw error;
+    } catch (error) {
+      console.error(error);
       toast.error("Não foi possível entrar com o Google.");
-      return;
+      setLoading(false);
     }
-    if (result.redirected) return;
-    await navigate({ to: "/painel" });
   }
 
   return (
@@ -120,25 +124,14 @@ function AuthPage() {
 
           <button
             onClick={google}
-            className="mt-7 flex h-12 w-full cursor-pointer items-center justify-center gap-2.5 rounded-2xl border border-border-strong bg-surface text-[15px] font-medium text-foreground transition-colors hover:bg-background"
+            disabled={loading}
+            className="mt-7 flex h-12 w-full cursor-pointer items-center justify-center gap-2.5 rounded-2xl border border-border-strong bg-surface text-[15px] font-medium text-foreground transition-colors hover:bg-background disabled:opacity-50"
           >
             <svg viewBox="0 0 24 24" className="size-4.5" aria-hidden>
-              <path
-                fill="#4285F4"
-                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1Z"
-              />
-              <path
-                fill="#34A853"
-                d="M12 23c2.97 0 5.46-.98 7.28-2.65l-3.57-2.77c-.99.66-2.26 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23Z"
-              />
-              <path
-                fill="#FBBC05"
-                d="M5.84 14.11a6.6 6.6 0 0 1 0-4.22V7.05H2.18a11 11 0 0 0 0 9.9l3.66-2.84Z"
-              />
-              <path
-                fill="#EA4335"
-                d="M12 4.75c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 1.46 14.97.5 12 .5A11 11 0 0 0 2.18 7.05l3.66 2.84c.87-2.6 3.3-4.14 6.16-4.14Z"
-              />
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1Z" />
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.65l-3.57-2.77c-.99.66-2.26 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23Z" />
+              <path fill="#FBBC05" d="M5.84 14.11a6.6 6.6 0 0 1 0-4.22V7.05H2.18a11 11 0 0 0 0 9.9l3.66-2.84Z" />
+              <path fill="#EA4335" d="M12 4.75c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 1.46 14.97.5 12 .5A11 11 0 0 0 2.18 7.05l3.66 2.84c.87-2.6 3.3-4.14 6.16-4.14Z" />
             </svg>
             Continuar com Google
           </button>
@@ -153,56 +146,26 @@ function AuthPage() {
             {mode === "criar" ? (
               <label className="flex flex-col gap-1.5">
                 <span className="vt-label">Nome</span>
-                <input
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  autoComplete="name"
-                  placeholder="Como quer ser chamado"
-                  className="h-12 rounded-2xl border border-border-strong bg-surface px-4 text-[15px] outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-                />
+                <input value={name} onChange={(event) => setName(event.target.value)} autoComplete="name" placeholder="Como quer ser chamado" className="h-12 rounded-2xl border border-border-strong bg-surface px-4 text-[15px] outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20" />
               </label>
             ) : null}
             <label className="flex flex-col gap-1.5">
               <span className="vt-label">E-mail</span>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                autoComplete="email"
-                placeholder="voce@email.com"
-                className="h-12 rounded-2xl border border-border-strong bg-surface px-4 text-[15px] outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-              />
+              <input type="email" required value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" placeholder="voce@email.com" className="h-12 rounded-2xl border border-border-strong bg-surface px-4 text-[15px] outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20" />
             </label>
             <label className="flex flex-col gap-1.5">
               <span className="vt-label">Senha</span>
-              <input
-                type="password"
-                required
-                minLength={6}
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                autoComplete={mode === "criar" ? "new-password" : "current-password"}
-                placeholder="Mínimo de 6 caracteres"
-                className="h-12 rounded-2xl border border-border-strong bg-surface px-4 text-[15px] outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-              />
+              <input type="password" required minLength={6} value={password} onChange={(event) => setPassword(event.target.value)} autoComplete={mode === "criar" ? "new-password" : "current-password"} placeholder="Mínimo de 6 caracteres" className="h-12 rounded-2xl border border-border-strong bg-surface px-4 text-[15px] outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20" />
             </label>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="mt-2 h-12 cursor-pointer rounded-2xl bg-primary text-[15px] font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
-            >
+            <button type="submit" disabled={loading} className="mt-2 h-12 cursor-pointer rounded-2xl bg-primary text-[15px] font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50">
               {loading ? "Aguarde…" : mode === "criar" ? "Criar conta" : "Entrar"}
             </button>
           </form>
 
           <p className="mt-6 text-center text-sm text-muted">
             {mode === "criar" ? "Já tem uma conta?" : "Ainda não tem conta?"}{" "}
-            <button
-              onClick={() => setMode(mode === "criar" ? "entrar" : "criar")}
-              className="cursor-pointer font-medium text-primary hover:underline"
-            >
+            <button onClick={() => setMode(mode === "criar" ? "entrar" : "criar")} className="cursor-pointer font-medium text-primary hover:underline">
               {mode === "criar" ? "Entrar" : "Criar agora"}
             </button>
           </p>
