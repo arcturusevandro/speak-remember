@@ -20,7 +20,7 @@ export const transcribeAudio = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => schema.parse(input))
   .handler(async ({ data }): Promise<TranscriptionResult> => {
-    const apiKey = process.env["LOVABLE_API_KEY"];
+    const apiKey = process.env["OPENAI_API_KEY"];
     if (!apiKey) {
       throw new Error("A transcrição de voz ainda não está configurada neste ambiente.");
     }
@@ -31,11 +31,11 @@ export const transcribeAudio = createServerFn({ method: "POST" })
     }
 
     const form = new FormData();
-    form.append("model", "openai/gpt-4o-mini-transcribe");
-    form.append("file", new Blob([bytes], { type: "audio/wav" }), "gravacao.wav");
+    form.append("model", "gpt-4o-mini-transcribe");
+    form.append("file", new Blob([bytes], { type: data.mimeType || "audio/wav" }), "gravacao.wav");
     form.append("language", "pt");
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/audio/transcriptions", {
+    const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
       method: "POST",
       headers: { Authorization: `Bearer ${apiKey}` },
       body: form,
@@ -46,8 +46,8 @@ export const transcribeAudio = createServerFn({ method: "POST" })
       if (response.status === 429) {
         throw new Error("Muitas transcrições seguidas. Aguarde alguns segundos e tente de novo.");
       }
-      if (response.status === 402) {
-        throw new Error("Os créditos de IA do espaço de trabalho acabaram.");
+      if (response.status === 401) {
+        throw new Error("A transcrição de voz não está autorizada neste ambiente.");
       }
       throw new Error(`Não consegui transcrever o áudio (${response.status}). ${detail.slice(0, 200)}`);
     }
