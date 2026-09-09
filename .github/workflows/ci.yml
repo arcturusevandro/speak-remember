@@ -6,7 +6,7 @@ on:
   pull_request:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   validate:
@@ -24,15 +24,20 @@ jobs:
       - name: Install dependencies and refresh lockfile
         run: bun install
 
-      - name: Upload refreshed lockfile
-        uses: actions/upload-artifact@v4
-        with:
-          name: refreshed-bun-lock
-          path: bun.lock
-          retention-days: 1
+      - name: Persist refreshed lockfile
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          if ! git diff --quiet -- bun.lock; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add bun.lock
+            git commit -m "chore: refresh Bun lockfile after migration"
+            git push
+          fi
 
       - name: Lint
         run: bun run lint
 
       - name: Build
+        if: always()
         run: bun run build
