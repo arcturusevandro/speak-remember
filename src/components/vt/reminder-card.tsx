@@ -181,9 +181,7 @@ export function ReminderCard({ reminder, onToggleDone, onDelete, onSave, busy }:
 }
 
 export function ReminderCardSkeleton() {
-  return (
-    <div className="h-[86px] animate-pulse rounded-2xl border border-border bg-surface" />
-  );
+  return <div className="h-[86px] animate-pulse rounded-2xl border border-border bg-surface" />;
 }
 
 export function EmptyState({ title, hint }: { title: string; hint?: string }) {

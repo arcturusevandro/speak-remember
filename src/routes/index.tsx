@@ -100,9 +100,9 @@ function Landing() {
                 <span className="text-primary">O resto é com a gente.</span>
               </h1>
               <p className="mt-5 max-w-xl text-[17px] leading-relaxed text-muted">
-                O Voztrace escuta uma frase comum — “me lembra amanhã às 10h de ligar para o
-                Carlos” — e transforma em um lembrete organizado, com data, horário e recorrência.
-                Sempre confirmando com você antes de salvar.
+                O Voztrace escuta uma frase comum — “me lembra amanhã às 10h de ligar para o Carlos”
+                — e transforma em um lembrete organizado, com data, horário e recorrência. Sempre
+                confirmando com você antes de salvar.
               </p>
               <div className="mt-8 flex flex-wrap items-center gap-3">
                 <Link

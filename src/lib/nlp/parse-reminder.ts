@@ -185,9 +185,8 @@ export function parseReminder(input: string, now: Date = new Date()): ParsedRemi
 
   // ---------- Recorrência ----------
   const monthlyMatch =
-    norm.match(
-      /\b(?:todo|todos\s+os|em\s+todo)\s+(?:mes(?:es)?\s+)?(?:no\s+)?dia\s+(\d{1,2})\b/,
-    ) ?? norm.match(/\btodo\s+dia\s+(\d{1,2})\b/);
+    norm.match(/\b(?:todo|todos\s+os|em\s+todo)\s+(?:mes(?:es)?\s+)?(?:no\s+)?dia\s+(\d{1,2})\b/) ??
+    norm.match(/\btodo\s+dia\s+(\d{1,2})\b/);
   const weeklyMatch = norm.match(
     new RegExp(
       `\\b(?:toda|todo|todas\\s+as|todos\\s+os)\\s+(${WEEKDAY_PATTERN})s?(?:[-\\s]feiras?)?\\b`,
@@ -268,7 +267,9 @@ export function parseReminder(input: string, now: Date = new Date()): ParsedRemi
 
   // ---------- Data ----------
 
-  const dayMonthWord = norm.match(new RegExp(`\\b(?:dia\\s+)?(\\d{1,2})\\s+de\\s+(${MONTH_PATTERN})(?:\\s+de\\s+(\\d{4}))?\\b`));
+  const dayMonthWord = norm.match(
+    new RegExp(`\\b(?:dia\\s+)?(\\d{1,2})\\s+de\\s+(${MONTH_PATTERN})(?:\\s+de\\s+(\\d{4}))?\\b`),
+  );
   const numericDate = norm.match(/\b(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?\b/);
   const nextWeekdayMatch = norm.match(
     new RegExp(

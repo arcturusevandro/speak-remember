@@ -26,9 +26,17 @@ export const Route = createFileRoute("/_authenticated/configuracoes")({
 });
 
 const ROADMAP = [
-  { icon: MessageCircle, title: "Lembretes no WhatsApp", body: "Receba o aviso onde você já conversa." },
+  {
+    icon: MessageCircle,
+    title: "Lembretes no WhatsApp",
+    body: "Receba o aviso onde você já conversa.",
+  },
   { icon: Bell, title: "Notificações push", body: "Alertas no navegador e no celular." },
-  { icon: CalendarDays, title: "Sincronizar agenda", body: "Espelhe seus lembretes no calendário." },
+  {
+    icon: CalendarDays,
+    title: "Sincronizar agenda",
+    body: "Espelhe seus lembretes no calendário.",
+  },
 ];
 
 async function loadProfile() {
@@ -134,7 +142,10 @@ function Configuracoes() {
         <h2 className="text-lg font-semibold text-foreground">Em breve</h2>
         <div className="mt-4 grid gap-3 sm:grid-cols-3">
           {ROADMAP.map((item) => (
-            <div key={item.title} className="rounded-2xl border border-dashed border-border-strong bg-surface/60 p-4">
+            <div
+              key={item.title}
+              className="rounded-2xl border border-dashed border-border-strong bg-surface/60 p-4"
+            >
               <item.icon className="size-4 text-primary" aria-hidden />
               <p className="mt-3 text-sm font-medium text-foreground">{item.title}</p>
               <p className="mt-1 text-sm text-muted">{item.body}</p>

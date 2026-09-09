@@ -13,7 +13,11 @@ export function mergeChunks(chunks: Float32Array[]): Float32Array {
   return merged;
 }
 
-export function downsample(input: Float32Array, inputRate: number, outputRate: number): Float32Array {
+export function downsample(
+  input: Float32Array,
+  inputRate: number,
+  outputRate: number,
+): Float32Array {
   if (outputRate >= inputRate) return input;
   const ratio = inputRate / outputRate;
   const length = Math.floor(input.length / ratio);

@@ -100,8 +100,6 @@ function Painel() {
         }}
       />
 
-
-
       <section className="mt-12">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-foreground">Próximos lembretes</h2>

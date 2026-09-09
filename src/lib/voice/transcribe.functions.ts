@@ -49,7 +49,9 @@ export const transcribeAudio = createServerFn({ method: "POST" })
       if (response.status === 401) {
         throw new Error("A transcrição de voz não está autorizada neste ambiente.");
       }
-      throw new Error(`Não consegui transcrever o áudio (${response.status}). ${detail.slice(0, 200)}`);
+      throw new Error(
+        `Não consegui transcrever o áudio (${response.status}). ${detail.slice(0, 200)}`,
+      );
     }
 
     const payload = (await response.json()) as { text?: string };
