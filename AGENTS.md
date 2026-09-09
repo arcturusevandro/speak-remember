@@ -1,17 +1,6 @@
-<!-- LOVABLE:BEGIN -->
-> [!IMPORTANT]
-> This project is connected to [Lovable](https://lovable.dev). Avoid rewriting
-> published git history — force pushing, or rebasing/amending/squashing commits
-> that are already pushed — as it rewrites history on Lovable's side and the
-> user will likely lose their project history.
->
-> Commits you push to the connected branch sync back to Lovable and show up in
-> the editor, so keep the branch in a working state.
-<!-- LOVABLE:END -->
-
 # Evandro Development Standard
 
-This repository follows engineering practices aligned with current OpenAI Skills/Plugins guidance.
+This repository follows engineering practices focused on reliability, portability and maintainability.
 
 ## Core workflow
 1. Inspect the existing implementation before changing it.
@@ -44,4 +33,4 @@ Never print, commit, paste into documentation, or expose API keys, tokens, passw
 A change is not complete merely because it compiles. When applicable, validate reminder creation, confirmation, editing, persistence, ambiguity handling, responsive UI, error states and runtime logs.
 
 ## Platform portability
-The project originated in Lovable. Preserve the existing Lovable synchronization requirements while connected. Prefer portable, project-owned infrastructure for new architecture and avoid introducing unnecessary additional platform lock-in. Existing platform-specific dependencies must only be removed after their usage and replacement are verified.
+The project originated in Lovable and was later migrated to project-owned, portable infrastructure. Preserve that origin truthfully in documentation, but do not reintroduce platform-specific dependencies without a demonstrated technical need. Prefer standard framework integrations and infrastructure controlled by the project owner.
